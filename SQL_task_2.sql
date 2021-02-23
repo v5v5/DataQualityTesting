@@ -36,7 +36,7 @@ LIMIT 1
 4) Посчитать количество кастомеров, которые заказывали продукты, поставляемые из Великобритании и Испании
 	 
 
-SELECT COUNT(CustomerID) FROM [Orders]
+SELECT COUNT(DISTINCT CustomerID) FROM [Orders]
 JOIN OrderDetails ON Orders.OrderID = OrderDetails.OrderID
 JOIN Products ON Products.ProductID = OrderDetails.ProductID
 JOIN Suppliers ON Suppliers.SupplierID = Products.SupplierID
@@ -51,13 +51,25 @@ UNION ALL
 SELECT * FROM [Employees]
 ORDER BY EmployeeID
 
-6) Написать запрос, который сравнит количество символов в колонке Country из Таблицы поставщиков (Suppliers) и кастомеров (Customers)
-
+6) Написать запрос, который сравнит количество символов в колонке Country из 
+Таблицы поставщиков (Suppliers) и кастомеров (Customers)
 
 Дополнение к 6-ой задаче
-Написать запрос, который сравнит количество символов в колонке Country из Таблицы поставщиков и кастомеров. Добавьте еще одну колонку Result. Если количество символов в колонках совпадает, то тогда значение в колонке Result 'Y', если не совпадает, то 'N'
+Написать запрос, который сравнит количество символов в колонке Country из Таблицы поставщиков и кастомеров. 
+Добавьте еще одну колонку Result. 
+Если количество символов в колонках совпадает, то тогда значение в колонке Result 'Y', если не совпадает, то 'N'
 
-!!! ЭТУ ЗАДАЧУ ПОНЯТЬ НЕВОЗМОЖНО
+SELECT
+CASE 
+	WHEN  
+		(SELECT SUM(L) FROM (
+			SELECT Length(Country) AS L FROM [Suppliers]))
+			!=
+		(SELECT SUM(L) FROM (
+			SELECT Length(Country) AS L FROM [Customers]))
+			THEN 'N'
+	ELSE 'Y'
+END AS 'Result'
 
 
 7) В таблице Suppliers сгруппируйте поставщиков (SupplierName) по первой букве и выведите, какое количество поставщиков приходится на каждую букву. Полученные строки отсортируйте в алфавитном порядке. Результат работы запроса должен иметь приблизительно такой вид:
