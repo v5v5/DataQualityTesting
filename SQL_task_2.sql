@@ -30,7 +30,7 @@ LIMIT 1
 
 SELECT * FROM [Employees]
 WHERE strftime('%Y', BirthDate) >= '1950' and strftime('%Y', BirthDate) < '1960'
-ORDER BY BirthDate
+ORDER BY BirthDate DESC
 LIMIT 1
 
 4) Посчитать количество кастомеров, которые заказывали продукты, поставляемые из Великобритании и Испании
