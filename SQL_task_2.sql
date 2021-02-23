@@ -77,8 +77,7 @@ A - 2
 C - 3 
 D -1 
 
-
-SELECT *, COUNT(*) AS Count FROM (
+SELECT (FirstLetter || '-' || COUNT(*)) AS Count FROM (
 	SELECT SUBSTR(SupplierName, 1, 1) AS FirstLetter 
 	FROM [Suppliers]
 )
