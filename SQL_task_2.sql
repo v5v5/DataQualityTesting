@@ -91,6 +91,7 @@ SELECT Customers.CustomerID, Customers.CustomerName, Price FROM [Customers]
 JOIN Orders ON Orders.CustomerID = Customers.CustomerID
 JOIN OrderDetails ON OrderDetails.OrderID = Orders.OrderID
 JOIN Products ON Products.ProductID = OrderDetails.ProductID
+WHERE Price IN (SELECT Price FROM Products ORDER BY Price DESC LIMIT 2)
 ORDER BY Price DESC
-LIMIT 2
+
 
