@@ -11,20 +11,12 @@ WHERE c.CustomerID NOT IN (
 
 2) Посчитать количество продуктов в каждом заказе и вывести максимальное число продуктов среди всех заказов.
 
-SELECT OrderID, SUM(Quantity) FROM OrderDetails
+SELECT OrderID, Count(OrderID) as Counter FROM OrderDetails
 GROUP BY OrderID
 
---1-й вариант
-SELECT MAX(SUMMA) FROM (
-	SELECT SUM(Quantity) as SUMMA FROM OrderDetails
-	GROUP BY OrderID
-)
-
---2-й вариант
-SELECT OrderID, SUM(Quantity) as SUMMA FROM OrderDetails
+SELECT OrderID, Count(OrderID) as Counter FROM OrderDetails
 GROUP BY OrderID
-ORDER BY SUMMA DESC
-LIMIT 1
+ORDER BY Counter DESC
 
 3) Выбрать самого молодого сотрудника, родившегося в 50-х годах.
 
