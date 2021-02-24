@@ -43,6 +43,16 @@ UNION ALL
 SELECT * FROM [Employees]
 ORDER BY EmployeeID
 
+-- highlight 'Dodsworth' 'Anne'
+SELECT *, COUNT(EmployeeID) as NUM FROM 
+(SELECT * FROM [Employees]
+WHERE LastName = 'Dodsworth' AND FirstName = 'Anne'
+UNION ALL
+SELECT * FROM [Employees]
+ORDER BY EmployeeID)
+GROUP BY EmployeeID
+ORDER BY NUM DESC
+
 6) Написать запрос, который сравнит количество символов в колонке Country из 
 Таблицы поставщиков (Suppliers) и кастомеров (Customers)
 
