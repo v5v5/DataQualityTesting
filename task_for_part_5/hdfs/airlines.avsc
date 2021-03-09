@@ -1,0 +1,50 @@
+{
+  "namespace" : "student",
+  "type" : "record",
+  "name" : "airlines",
+  "fields" : [
+      {
+        "name" : "field0",
+        "type" : [ "null", "int" ],
+        "default" : null
+      },
+      {
+        "name" : "field1",
+        "type" : [ "null", "string" ],
+        "default" : null
+      },
+      {
+        "name" : "field2",
+        "type" : [ "null", "string" ],
+        "default" : null
+      },
+      {
+        "name" : "field3",
+        "type" : [ "null", "string" ],
+        "default" : null
+      },
+      {
+        "name" : "field4",
+        "type" : [ "null", "string" ],
+        "default" : null
+      },
+      {
+        "name" : "field5",
+        "type" : [ "null", "string" ],
+        "default" : null
+      },
+      {
+        "name" : "field6",
+        "type" : [ "null", "string" ],
+        "default" : null
+      },
+      {
+        "name" : "field7",
+        "type" : [ "null", "string" ],
+        "default" : null
+      }
+  ]
+}
+
+
+
