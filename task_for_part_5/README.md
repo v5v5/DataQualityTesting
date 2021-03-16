@@ -9,7 +9,7 @@ hadoop fs –mkdir /user/student/routes
 hadoop fs –mkdir /user/student/planes
 hadoop fs –mkdir /user/student/countries
 
-screenshot-1.png
+![see screenshot-1.png](./screenshot-1.png)
 
 2.	Copy each file from the local file system's airlines dataset to the corresponding HDFS directory created in step #1 
 (i.e. routes.dat should be stored HDFS as /user/student/routes/routes.dat) 
@@ -21,12 +21,12 @@ hadoop fs –put routes.dat /user/student/routes.dat
 hadoop fs –put planes.dat /user/student/planes.dat
 hadoop fs –put countries.dat /user/student/ountries.dat
 
-screenshot-2.png
+![see screenshot-2.png](./screenshot-2.png)
 
 3.	Print out to the console first 9 lines of /user/student/countries/countries.dat file
 
 hadoop fs -cat /user/student/countries/countries.dat | head -9
-screenshot-3.png
+![see screenshot-3.png](./screenshot-3.png)
 
 4.	Compare MD5 checksums between the local file airports.dat and HDFS file /user/student/airports/airports.dat. Is there any difference?
 
@@ -35,16 +35,18 @@ acfcde754e66b4f224562fa74b567b2b airports.dat
 [ctoudera@quickstart studentl$ hadoop fs -cat /user/student/airports/airports.dat | md5sum
 acfcde754e66b4f224562fa74b567b2b
 
-screenshot-4.png
+![see screenshot-4.png](./screenshot-4.png)
 
 5.	How much replicas does the /user/student/airports/airports.dat file have? Set number of replicas to 4 for the file
 
-screenshot-5.png
+![see screenshot-5.png](./screenshot-5.png)
 
 6.	Print out the total size of the /user/student dir in megabytes. 
 Why the space consumed by the directory in HDFS doesn't equal to the space consumed by the same directory in local FS?
 
-screenshot-6.png
+Because dhfs has cluster's file size 64 MB or 128 MB whereas ntfs cluster has range from 512 bytes to 64 kilobytes
+
+![see screenshot-6.png](./screenshot-6.png)
 
 7.	Run the filesystem checking utility for the /user directory in HDFS. 
 Analyze utility's output in order to answer the following questions:
@@ -63,7 +65,7 @@ Number of racks: 1
 
 •	Where the blocks are located? (block path)
 
-see screenshot-7.png
+![see screenshot-7.png](./screenshot-7.png)
 
 > hdfs fsck /user
 
@@ -76,9 +78,8 @@ python script в директории /hdfs/main.py
 - конвертирование airlines.csv в airlines.avro
 - запись airlines.avro в hdfs
 
-screenshot-8.png
-screenshot-9.png
-
+![see screenshot-8.png](./screenshot-8.png)
+![see screenshot-9.png](./screenshot-9.png)
 
 
 
