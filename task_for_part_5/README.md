@@ -2,40 +2,47 @@
 
 1.	Create HDFS directory /user/student and nested directories airports, airlines, routes, planes, countries
 
-hadoop fs –mkdir /user/student
-hadoop fs –mkdir /user/student/airports
-hadoop fs –mkdir /user/student/airlines
-hadoop fs –mkdir /user/student/routes
-hadoop fs –mkdir /user/student/planes
-hadoop fs –mkdir /user/student/countries
+hadoop fs –mkdir /user/student  
+hadoop fs –mkdir /user/student/airports  
+hadoop fs –mkdir /user/student/airlines  
+hadoop fs –mkdir /user/student/routes  
+hadoop fs –mkdir /user/student/planes  
+hadoop fs –mkdir /user/student/countries  
 
 ![see screenshot-1.png](./screenshot-1.png)
 
 2.	Copy each file from the local file system's airlines dataset to the corresponding HDFS directory created in step #1 
 (i.e. routes.dat should be stored HDFS as /user/student/routes/routes.dat) 
 
-hadoop fs –put airports.dat /user/student/airports.dat
-hadoop fs –put airlines.dat /user/student/airlines.dat
+hadoop fs –put airports.dat /user/student/airports.dat  
+hadoop fs –put airlines.dat /user/student/airlines.dat  
 
-hadoop fs –put routes.dat /user/student/routes.dat
-hadoop fs –put planes.dat /user/student/planes.dat
-hadoop fs –put countries.dat /user/student/ountries.dat
+hadoop fs –put routes.dat /user/student/routes.dat  
+hadoop fs –put planes.dat /user/student/planes.dat  
+hadoop fs –put countries.dat /user/student/ountries.dat  
 
 ![see screenshot-2.png](./screenshot-2.png)
 
 3.	Print out to the console first 9 lines of /user/student/countries/countries.dat file
 
-hadoop fs -cat /user/student/countries/countries.dat | head -9
+hadoop fs -cat /user/student/countries/countries.dat | head -9  
+
 ![see screenshot-3.png](./screenshot-3.png)
 
 4.	Compare MD5 checksums between the local file airports.dat and HDFS file /user/student/airports/airports.dat. Is there any difference?
 
-[cloudera@quickstart student]$ md5sum airports . dat
-acfcde754e66b4f224562fa74b567b2b airports.dat
-[ctoudera@quickstart studentl$ hadoop fs -cat /user/student/airports/airports.dat | md5sum
-acfcde754e66b4f224562fa74b567b2b
+[cloudera@quickstart student]$ md5sum airports.dat  
+acfcde754e66b4f224562fa74b567b2b airports.dat  
+[ctoudera@quickstart studentl$ hadoop fs -cat /user/student/airports/airports.dat | md5sum  
+acfcde754e66b4f224562fa74b567b2b  
 
 ![see screenshot-4.png](./screenshot-4.png)
+
+[cloudera@quickstart student]$ hdfs dfs -checksum /user/student/airports/airports.dat  
+/user/student/airports/airports.dat	MD5-of-0MD5-of-512CRC32C	000002000000000000000000a4129426226faee1719fb3c00d055f16
+
+![see screenshot-4.1.png](./screenshot-4.1.png)
+
 
 5.	How much replicas does the /user/student/airports/airports.dat file have? Set number of replicas to 4 for the file
 
@@ -44,7 +51,7 @@ acfcde754e66b4f224562fa74b567b2b
 6.	Print out the total size of the /user/student dir in megabytes. 
 Why the space consumed by the directory in HDFS doesn't equal to the space consumed by the same directory in local FS?
 
-Because dhfs has cluster's file size 64 MB or 128 MB whereas ntfs cluster has range from 512 bytes to 64 kilobytes
+Because dhfs has cluster's file size 64 MB or 128 MB whereas ext4 cluster has range from 1KB
 
 ![see screenshot-6.png](./screenshot-6.png)
 
@@ -67,7 +74,7 @@ Number of racks: 1
 
 ![see screenshot-7.png](./screenshot-7.png)
 
-> hdfs fsck /user
+> hdfs fsck /user  
 
 ## HDFS_task_automation
 
