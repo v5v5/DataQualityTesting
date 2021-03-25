@@ -54,7 +54,8 @@ public class PersistReceiverToFix implements Receiver {
                 System.out.println(" [x] Message acked. [msg=" + message + ", rcvId = " + id + "]");
 
             };
-            boolean autoAck = true;
+//            boolean autoAck = true;
+            boolean autoAck = false;
             channel.basicConsume(queueName, autoAck, deliverCallback, consumerTag -> {
             });
         } catch (IOException e) {

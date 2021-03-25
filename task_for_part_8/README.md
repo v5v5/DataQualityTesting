@@ -118,5 +118,27 @@ docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
 
 ### 2. com.epam.queue.task.FixReceiverTaskIT  
 
+Т.к. потребитель настроен на надежную доставку в случае падения в методе
+```
+            boolean durable = true;
+            channel.queueDeclare(queueName, durable, false, false, null);
+```
+мы должны отключить автоматическую отправку подтверждений потребителем
+```
+            boolean autoAck = false;
+            channel.basicConsume(queueName, autoAck, deliverCallback, consumerTag -> {});
+```
 
+![see screenshot-auto-2.png](./screenshot-auto-2.png)  
+
+### 3. com.epam.queue.task.RoundRobinWorkflowTaskIT  
+
+- в методе init настраиваются три объекта
+	- отправитель rcv1 - принимает 10 секунд, потом отключается
+	- 1й приемник snd1 - отправляет 25 сообщений через 500 мс каждое, т.е отправка идет 12.5 секунд
+	- 2й приемник snd2 - отправляет 25 сообщений через 400 мс каждое, т.е отправка идет 10 секунд
+- поэтому приемник не успевает забрать все сообщения из очереди т.к. 10 < 12.5
+- для того чтобы забрать все оставшиеся сообщения нужно запустить еще один приемник
+
+![see screenshot-auto-3.png](./screenshot-auto-3.png)  
 

@@ -1,5 +1,6 @@
 package com.epam.queue.task;
 
+import com.epam.queue.tasks.rabbit.queue.PersistReceiver;
 import com.epam.queue.tasks.rabbit.queue.tasks.RoundRobinWorkflowTask;
 import com.epam.queue.tasks.utils.HttpClientUtils;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,7 @@ public class RoundRobinWorkflowTaskIT {
         task.init();
         String queryName = RoundRobinWorkflowTask.QUERY_NAME;
         //Нужно добавить шаг прямо сюда:
+        task.addMagic(new PersistReceiver());
         //--------/---------/---------/---------/
         assertEquals(0, HttpClientUtils.getMessageReady(queryName));
     }
