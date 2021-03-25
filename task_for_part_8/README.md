@@ -110,6 +110,13 @@ docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
 2-й приемник (id = 24) обрабатывал сообщения. Обработал 60 сообщений.  
 2-й приемник (id = 24) закрылся.  
 
+# Очереди, AMQP, задания для автоматизированного тестирования.  
+
+### 1. com.epam.queue.task.ImplementReceiverTaskIT  
+
+![see screenshot-auto-1.png](./screenshot-auto-1.png)  
+
+### 2. com.epam.queue.task.FixReceiverTaskIT  
 
 
 
