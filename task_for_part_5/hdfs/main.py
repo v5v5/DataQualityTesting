@@ -3,7 +3,8 @@ from avro import schema
 from avro.datafile import DataFileReader, DataFileWriter
 from avro.io import DatumReader, DatumWriter
 
-client = InsecureClient('http://192.168.1.155:50070', user='cloudera')
+# client = InsecureClient('http://192.168.1.155:50070', user='cloudera')
+client = InsecureClient('http://192.168.56.102:50070', user='cloudera')
 
 # чтение airlines.dat из hdfs
 with client.read(hdfs_path='/user/student/airlines/airlines.dat') as reader:
