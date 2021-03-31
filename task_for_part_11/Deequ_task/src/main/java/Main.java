@@ -10,6 +10,7 @@
 //import scala.Option;
 
 import com.amazon.deequ.analyzers.Analyzer;
+import com.amazon.deequ.analyzers.ApproxCountDistinct;
 import com.amazon.deequ.analyzers.Completeness;
 import com.amazon.deequ.analyzers.Compliance;
 import com.amazon.deequ.analyzers.Correlation;
@@ -19,10 +20,11 @@ import com.amazon.deequ.analyzers.runners.AnalysisRunner;
 import com.amazon.deequ.analyzers.runners.AnalyzerContext;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.stream.Collectors;
 import org.apache.spark.sql.SparkSession;
 import scala.Option;
-import scala.collection.JavaConversions;
+import scala.collection.JavaConverters;
 
 public class Main {
 
@@ -46,33 +48,40 @@ public class Main {
     System.out.println(Instant.now() + ": " + conf);
 
     var df = spark.read()
+//        .format("com.databricks.spark.csv")
+        .format("org.apache.spark.sql.execution.datasources.csv.CSVFileFormat")
+//        .format("org.apache.spark.sql.execution.datasources.v2.csv.CSVDataSourceV2")
+//        .format("csv")
         .option("sep", "\t")
+        .option("inferSchema", "true")
         .option("header", "true")
-//        .option("inferSchema", "true")
-        .csv(
+        .load(
             "file:///C:/Users/Vitalii_Balitckii/Downloads/amazon_reviews_us_Camera_v1_00.tsv/amazon_reviews_us_Camera_v1_00.tsv");
 
-    df.show(10);
+    df.printSchema();
+
+    System.out.println("fsdfsdfd");
+
+    df.show(5);
 
     var size = (Analyzer) new Size(Option.empty());
 
     var analysisResult = AnalysisRunner
         .onData(df)
         .addAnalyzer(size)
-//        .addAnalyzer((Analyzer) new Completeness("star_rating", Option.empty()))
-        .addAnalyzer((Analyzer) Completeness.apply("star_rating", Option.empty()))
-//                    .addAnalyzer(new Completeness("review_id"))
-//                    .addAnalyzer(ApproxCountDistinct("review_id"))
+        .addAnalyzer((Analyzer) new Completeness("star_rating", Option.empty()))
+        .addAnalyzer((Analyzer) new Completeness("product_title", Option.empty()))
+//        .addAnalyzer((Analyzer) new ApproxCountDistinct("star_rating",  Option.empty()))
         .addAnalyzer((Analyzer) new Mean("star_rating", Option.empty()))
         .addAnalyzer(
             (Analyzer) new Compliance("top star_rating", "star_rating >= 4.0", Option.empty()))
-        .addAnalyzer((Analyzer) new Correlation("star_rating", "helpful_votes", Option.empty()))
+//        .addAnalyzer((Analyzer) new Correlation("star_rating", "helpful_votes", Option.empty()))
         .run();
 
     var metrics = AnalyzerContext.successMetricsAsDataFrame(
         spark,
         analysisResult,
-        JavaConversions.asScalaBuffer(Arrays.asList(size)));
+        JavaConverters.asScalaBuffer(Collections.emptyList()));
 
     metrics.show();
 
