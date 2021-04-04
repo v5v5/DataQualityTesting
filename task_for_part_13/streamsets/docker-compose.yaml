@@ -1,0 +1,39 @@
+version: "2"
+
+services:
+  streamsets:
+    build:
+        context: .
+    restart: always
+    container_name: streamsets-dc
+    ports:
+    - 18630:18630
+    volumes:
+    - streamsetsdata:/data
+
+  mysql:
+    image: mariadb:10.5.4
+    container_name: mydb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mypass123
+      MYSQL_DATABASE: weather
+    ports:
+    -  3306:3306
+    volumes:
+    - mysql-datavolume:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: my-phpmyadmin
+    environment:
+      PMA_HOST: mydb
+    restart: always
+    ports:
+    - 8081:80
+
+volumes:
+  mysql-datavolume:
+    driver: local
+  streamsetsdata:
+    driver: local

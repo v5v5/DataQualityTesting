@@ -1,0 +1,4 @@
+// user-defined external directory
+grant codebase "file:///opt/ext/-" {
+  permission java.security.AllPermission;
+};
