@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import org.apache.spark.sql.SparkSession;
 import scala.Option;
 
-public class Main2 {
+public class Main3 {
 
   public static void main(String[] args) {
 
@@ -35,6 +35,8 @@ public class Main2 {
 
     var df = spark.read()
         .option("sep", "\t")
+//        .option("mode", "FAILFAST")
+        .option("multiline", "true")
         .option("inferSchema", "true")
         .option("header", "true")
         .csv(System.getProperty("user.home") + pathToFile);

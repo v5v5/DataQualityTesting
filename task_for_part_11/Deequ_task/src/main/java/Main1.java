@@ -27,7 +27,7 @@ public class Main1 {
 
     System.out.println(Instant.now() + ": " + conf);
 
-    var pathToFile = "/Downloads/amazon_reviews_us_Camera_v1_00.tsv/amazon_reviews_us_Camera_v1_00.tsv";
+    var pathToFile = "/Downloads/amazon_reviews_us_Camera_v1_00.tsv";
 //    var pathToFile = "/Downloads/amazon_reviews_us_Camera_v1_00.tsv.gz";
 
     var df = spark.read()
@@ -37,7 +37,7 @@ public class Main1 {
         .csv(System.getProperty("user.home") + pathToFile);
     df.printSchema();
 
-    df.show(5);
+    df.show(5, false);
 
     var verificationResult = new VerificationSuite()
         .onData(df)
@@ -85,7 +85,7 @@ public class Main1 {
         .run();
     var checkResultAsDataframe = checkResultsAsDataFrame(
         spark, verificationResult, asScalaBuffer(Collections.emptyList()));
-    checkResultAsDataframe.show();
+    checkResultAsDataframe.show(false);
 
     spark.stop();
   }
