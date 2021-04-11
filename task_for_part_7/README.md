@@ -1,4 +1,4 @@
-##### PRECONDITIONS
+###	 PRECONDITIONS
 
 * Execute 
 docker pull jupyter/all-spark-notebook
@@ -32,7 +32,7 @@ df.printSchema()
 df.show()
 
 
-##### Tasks #1. Query #1:
+## Task #1. Query #1:
 
 ### 1.2. Implement each query using Spark Dataframe API
 
@@ -157,7 +157,7 @@ diff.summary().show()
 ![see screenshot-1.2.4.png](./screenshot-1.2.4.png)
 
 
-##### Tasks #1. Query #2:
+## Tasks #1. Query #2Query #2:
 
 ### 1.1. Implement each query in Spark SQL (see org.apache.spark.sql.SparkSession#sql)
 
@@ -311,7 +311,7 @@ df_diff.summary().show()
 
 ![see screenshot-1.1.4.png](./screenshot-1.1.4.png)
 
-##### Task #2:
+## Task #2:
 
 2.1. Create a dataframe from flights.csv file 
 2.2. Iterate over each dataframe's column and, if the column's data type is STRING, 
@@ -334,7 +334,21 @@ for c in columns:
     print(c, '\t', df.filter(df[c].isNull()).count())
 ```
 
-##### Apache Spark app test automation task.
+## Apache Spark app test automation task.
+
+Install:
+
+- install 'spark-2.4.7-bin-hadoop2.7' from https://spark.apache.org/downloads.html  
+- install 'winutils-master' from https://github.com/cdarlint/winutils  
+- set system environment variables:
+```
+JAVA_HOME=path\to\jdk  
+HADOOP_HOME=C:\winutils-master\hadoop-2.7.7\
+```
+- run spark by command
+```
+.\spark-shell
+```
 
 1) completed ![see screenshot-pop-1.png](./screenshot-pop-1.png)
 2) completed ![see screenshot-pop-2.png](./screenshot-pop-2.png)
