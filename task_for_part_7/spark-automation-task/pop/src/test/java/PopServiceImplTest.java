@@ -1,7 +1,13 @@
 import static java.util.Arrays.asList;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.epam.pop.AppConfig;
 import com.epam.pop.PopService;
+import java.util.Arrays;
+import java.util.List;
+import org.apache.spark.SparkException;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -43,8 +49,8 @@ public class PopServiceImplTest {
     var actualResult = ps.topWords(rddLines, 3);
 
     // assert
-    Assertions.assertEquals(3, actualResult.size());
-    Assertions.assertEquals("mouse", actualResult.get(0));
+    assertEquals(3, actualResult.size());
+    assertEquals("mouse", actualResult.get(0));
   }
 
   @Test
@@ -57,7 +63,88 @@ public class PopServiceImplTest {
     var actualResult = ps.topWords(rddLines, 2);
 
     // assert
-    Assertions.assertEquals(2, actualResult.size());
-    Assertions.assertEquals("mouse", actualResult.get(0));
+    assertEquals(2, actualResult.size());
+    assertEquals("mouse", actualResult.get(0));
+  }
+
+  @Test
+  public void testDataContainsNull() {
+    // arrange
+    var inputData = asList(
+        null, "кошка", "кошка", null, "кошка", "cat", "cat", "狗", "狗", "狗");
+    var rddLines = cxt.parallelize(inputData);
+
+    // act-assert
+    assertThrows(SparkException.class, () -> ps.topWords(rddLines, 1));
+  }
+
+  @Test
+  public void testDataDoesNotContainNull() {
+    // arrange
+    var inputData = asList(
+        "animal", "dog", "кошка", "кошка", "кошка", "cat", "cat", "狗", "狗", "狗");
+    var rddLines = cxt.parallelize(inputData);
+
+    // act-assert
+    assertDoesNotThrow(() -> ps.topWords(rddLines, 1));
+  }
+
+  @Test
+  public void testDataContainsSeveralWords() {
+    var inputData = asList(
+        "dog", "dog", "dog", "dog",
+        "cat", "cat",
+        "cat and dog",
+        "dog and cat", "dog and cat");
+
+    var countDog = inputData.stream()
+        .flatMap(s -> List.of(s.split("\\s")).stream())
+        .filter(f -> f.equals("dog")).count();
+    System.out.println("Count dog = " + countDog);
+
+    var countCat = inputData.stream()
+        .flatMap(s -> List.of(s.split("\\s")).stream())
+        .filter(f -> f.equals("cat")).count();
+    System.out.println("Count cat = " + countCat);
+
+    var rddLines = cxt.parallelize(inputData);
+
+    // act
+    var result = ps.topWords(rddLines, 4);
+    System.out.println(result);
+
+    // assert
+    Assertions.assertEquals("dog", result.get(0));
+  }
+
+  @Test
+  public void testDataContainsNotPrintedSymbols() {
+    // arrange
+    var inputData = asList(
+        "dog", "dog", "dog\t", "dog",
+        "cat", "cat",
+        "cat\tdog",
+        "dog\ncat", "dog\ncat",
+        "cat\ncat", "cat\tmouse");
+
+    var countDog = inputData.stream()
+        .flatMap(s -> List.of(s.split("\\s")).stream())
+        .filter(f -> f.equals("dog")).count();
+    System.out.println("Count dog = " + countDog);
+
+    var countCat = inputData.stream()
+        .flatMap(s -> List.of(s.split("\\s")).stream())
+        .filter(f -> f.equals("cat")).count();
+    System.out.println("Count cat = " + countCat);
+
+    var rddLines = cxt.parallelize(inputData);
+
+    // act
+    var result = ps.topWords(rddLines, 5);
+
+    // assert
+    assertEquals("cat", result.get(0));
   }
 }
+
+

@@ -125,31 +125,8 @@ public class PoetryAnalyzerIT {
     @Test
     public void testDataIsMissingAfterDataMigration() throws IOException {
         // arrange
-        System.out.println("Migration with losses is started...");
-        var migrationPath = ".\\migration\\";
-        File srcDirectory = new File(path);
-        File dstDirectory = new File(migrationPath);
-
-        deleteDirectory(dstDirectory);
-        copyDirectory(srcDirectory, dstDirectory);
-
-        for (var popstarDir: dstDirectory.listFiles()) {
-            System.out.println(
-                Arrays.stream(popstarDir.listFiles())
-                    .map(f -> f.getName())
-                    .collect(Collectors.toList()));
-            var popstarFiles = popstarDir.listFiles();
-            var randomIndex = new Random()
-                .ints(0, popstarFiles.length)
-                .findFirst()
-                .getAsInt();
-            FileUtils.forceDelete(popstarFiles[randomIndex]);
-            System.out.println(
-                Arrays.stream(popstarDir.listFiles())
-                    .map(f -> f.getName())
-                    .collect(Collectors.toList()));
-        }
-        System.out.println("Migration with losses is done.");
+        var migrationPath = ".\\migration-storage\\";
+        createMigrationStorage(migrationPath, true);
 
         // act
         Dataset<Row> dataBeforeMigration = wordData.create(path + "*");
@@ -158,10 +135,44 @@ public class PoetryAnalyzerIT {
         // assert
         assertAll(
             () -> assertEquals(dataBeforeMigration.count(), dataAfterMigration.count()),
-            () -> {
-                deleteDirectory(dstDirectory);
-                System.out.println(String.format("After test: directory '%s' is deleted", dstDirectory));
-            }
+            () -> deleteMigrationStorage(migrationPath)
         );
     }
+
+    private void createMigrationStorage(String migrationPath, boolean losses) throws IOException {
+        System.out.println("Migration with losses is started...");
+
+        File srcDirectory = new File(path);
+        File dstDirectory = new File(migrationPath);
+
+        deleteDirectory(dstDirectory);
+        copyDirectory(srcDirectory, dstDirectory);
+
+        if (losses) {
+            for (var popstarDir : dstDirectory.listFiles()) {
+                System.out.println(
+                    Arrays.stream(popstarDir.listFiles())
+                        .map(f -> f.getName())
+                        .collect(Collectors.toList()));
+                var popstarFiles = popstarDir.listFiles();
+                var randomIndex = new Random()
+                    .ints(0, popstarFiles.length)
+                    .findFirst()
+                    .getAsInt();
+                FileUtils.forceDelete(popstarFiles[randomIndex]);
+                System.out.println(
+                    Arrays.stream(popstarDir.listFiles())
+                        .map(f -> f.getName())
+                        .collect(Collectors.toList()));
+            }
+        }
+        System.out.println("Migration with losses is done.");
+    }
+
+    private void deleteMigrationStorage(String migrationStoragePath) throws IOException {
+        File migrationStorage = new File(migrationStoragePath);
+        deleteDirectory(migrationStorage);
+        System.out.println(String.format("After test: directory '%s' is deleted", migrationStorage));
+    }
+
 }

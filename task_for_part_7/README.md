@@ -1,36 +1,50 @@
 ###	 PRECONDITIONS
 
 * Execute 
+```
 docker pull jupyter/all-spark-notebook
 docker run -p 8888:8888 -p 4040:4040 jupyter/all-spark-notebook
 open http://127.0.0.1:8888/?token=fb520c3e63a255a2968c7a3f1af91e2304044462d8e34816
-
+but copy-paste real path from container log 
+```
 * get config by python from notebook
+```
 from pyspark.sql import SparkSession
 spark = SparkSession.builder.getOrCreate()
 spark.sparkContext.getConf().getAll()
+```
+* download  
+https://www.kaggle.com/usdot/flight-delays?select=airlines.csv
+https://www.kaggle.com/usdot/flight-delays?select=airports.csv
+https://www.kaggle.com/usdot/flight-delays?select=flights.csv
 
-* upload all files (including zip) by button Upload in notebook
+* upload 'flights.csv.zip', 'golden_dataset.zip' (including zip) by button Upload in notebook:
 
 * unzip golden_dataset.zip by terminal in notebook
+```
 unzip golden_dataset.zip -d ./golden_dataset
 unzip flights.csv.zip
-
+```
 * read schemas of csv
+```
 df = spark.read.option("header",True).csv("./airports.csv")
 df.printSchema()
-
+```
 * read data of csv
+```
 df = spark.read.option('sep',',').option("header",True).csv("./flights.csv")
 df.show()
-
+```
 * read schemas of parquet
+```
 df = spark.read.parquet('golden_dataset/query1')
 df.printSchema()
-
+```
 * read data of parquet
-df.show()
-
+```
+df.show(5)
+df_parquet = df
+```
 
 ## Task #1. Query #1:
 
@@ -81,7 +95,7 @@ dfr1 = df\
 # .where(df['SCHEDULED_DEPARTURE'].between(59,101) )
 # .orderBy(['departure_date', 'departure_time_f'])
 
-# dfr.show(100)
+# dfr.show(5)
 
 dfr2 = dfr1\
 .withColumn(
@@ -107,8 +121,9 @@ dfr2 = dfr1\
         ) / 60
     )
 )\
-.orderBy(['departure_date', 'daily_flight_serial_number'])\
-.show(100)
+.orderBy(['departure_date', 'daily_flight_serial_number'])
+
+dfr2.show(5)
 ```
 
 ![see screenshot-1.2.png](./screenshot-1.2.png)
@@ -117,7 +132,7 @@ dfr2 = dfr1\
 ### 1.2.2. Compare query results with golden dataset (to be provided) using Spark Dataframe API. It's allowed to use EXCEPT clause
 
 ```
-diff = dfr2.subtract(df_parquet)
+diff = dfr2.exceptAll(df_parquet)
 diff.count()
 
 diff.toPandas().to_csv('diff.csv')
@@ -159,21 +174,46 @@ diff.summary().show()
 
 ## Tasks #1. Query #2Query #2:
 
+* download https://think.cs.vt.edu/corgis/datasets/json/airlines/airlines.json
+
 ### 1.1. Implement each query in Spark SQL (see org.apache.spark.sql.SparkSession#sql)
 
 ```
 import pyspark.sql.functions as F
 
-df_json = spark.read.option('multiline', True).json('airlines.json')
+airlines_json = spark.read.option('multiline', True).json('airlines.json')
+```
+```
+airlines_json.show(5)
+```
+```
+airlines_json.createOrReplaceTempView('airlines_json')
 
-df = df_json.select(
+```
+
+```
+flights_csv = spark.read.option("header",True).option('multiline', True).option("inferSchema", True).csv("./flights.csv")
+flights_csv.show(2)
+```
+
+```
+flights_csv.createOrReplaceTempView('flights_csv')
+```
+```
+airlines_iata = spark.read.option("header",True).csv("./airlines.csv")
+airlines_iata.show()
+airlines_iata.createOrReplaceTempView('airlines_iata')
+```
+
+```
+df_airlines_json = airlines_json.select(
     F.col('Airport.Code').alias('Airport.Code'),
     F.col('Airport.Name').alias('Airport.Name'),
 
-    F.col('Time.Label').alias('Airport.Code'),
-    F.col('Time.Month').alias('Airport.Name'),
-    F.col('Time.Month Name').alias('Airport.Month Name'),
-    F.col('Time.Year').alias('Airport.Year'),
+    F.col('Time.Label').alias('Time.Label'),
+    F.col('Time.Month').alias('Time.Month'),
+    F.col('Time.Month Name').alias('Time.Month Name'),
+    F.col('Time.Year').alias('Time.Year'),
     
     F.col('Statistics.# of Delays.Carrier').alias('Statistics.# of Delays.Carrier'),
     F.col('Statistics.# of Delays.Late Aircraft').alias('Statistics.# of Delays.Late Aircraft'),
@@ -198,6 +238,11 @@ df = df_json.select(
     F.col('Statistics.Minutes Delayed.Weather').alias('Statistics.Minutes Delayed.Weather'),
 )
 
+df_airlines_json.createOrReplaceTempView('df_airlines_json')
+df_airlines_json.show(5)
+```
+
+```
 df_res = spark.sql('''
 SELECT 
     year_month,
@@ -241,7 +286,7 @@ FROM (
         `Airport.Code` as airport_code,
         (`Statistics.Flights.Cancelled` + `Statistics.Flights.Delayed` + `Statistics.Flights.Diverted`) as number_of_delays_for_airport,
         airline_name
-    FROM airlines_json 
+    FROM df_airlines_json 
         LATERAL VIEW EXPLODE(split(`Statistics.Carriers.Names`, ',')) AS airline_name
     WHERE `Time.Year` = "2015"
 
@@ -249,7 +294,7 @@ FROM (
 LEFT JOIN airlines_iata ON airlines_iata.AIRLINE=airline_name
 ''')
 
-df_res.show(1000)
+df_res.show(10)
 # df_res.count()
 
 df_res.createOrReplaceTempView('df_res')
@@ -274,8 +319,62 @@ FROM df_res MINUS ALL
 ''')
 df_diff.count()
 ```
+или
+```
+df_0 = spark.sql('''
+SELECT *
+FROM df_res
+WHERE (
+    year_month,airport_code,
+    number_of_delays_for_airport,
+    airline_name,
+    airline_iata_code,
+    number_of_delays_for_airline_in_airport
+) NOT IN (
+  SELECT *
+  FROM df_parquet
+)
+''')
+df_0.count()
+```
+```
+df_0.createOrReplaceTempView('df_0')
+df_0.show()
+```
+```
+df_1 = spark.sql('''
+SELECT *
+FROM df_parquet
+WHERE (
+    year_month,airport_code,
+    number_of_delays_for_airport,
+    airline_name,
+    airline_iata_code,
+    number_of_delays_for_airline_in_airport
+) NOT IN (
+  SELECT *
+  FROM df_res
+)
+''')
+df_1.count()
+```
+```
+df_1.createOrReplaceTempView('df_1')
+df_1.show()
+```
+```
+df_diff = spark.sql('''
+SELECT *
+FROM df_0
+UNION ALL
+SELECT *
+FROM df_1
+''')
+df_diff.count()
+```
 
 ![see screenshot-1.1.2.png](./screenshot-1.1.2.png)
+
 
 ### 1.1.3. Save difference between datasets (if any) to both Excel and Parquet files
 
