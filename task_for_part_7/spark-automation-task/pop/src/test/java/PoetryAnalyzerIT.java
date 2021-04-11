@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -70,5 +71,26 @@ public class PoetryAnalyzerIT {
             // assert
             Assertions.assertEquals(expectedWords, actualWords);
         }
+    }
+
+    @Test
+    public void testTheUnexpectedDataDoesNotTotallyBreakTheService() {
+        // arrange
+        var unexpectedPoetry = RandomStringUtils.randomAlphanumeric(10);
+
+        // act
+        try {
+            var expectedWords = analyzer.mostPopularWords(unexpectedPoetry, 5);
+        } catch (Exception ex) {
+            System.out.println("The unexpected data cause Exception");
+            ex.printStackTrace();
+        }
+
+        // assert
+        var poetry = "perry";
+        var expectedWords = analyzer.mostPopularWords(poetry, 5);
+        var actualWords = analyzer.mostPopularWords(poetry, 5);
+        Assertions.assertEquals(expectedWords, actualWords);
+        System.out.println("The service is still working");
     }
 }
