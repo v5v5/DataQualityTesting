@@ -2,6 +2,7 @@ import com.epam.pop.AppConfig;
 import com.epam.pop.PoetryAnalyzer;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -56,18 +57,18 @@ public class PoetryAnalyzerIT {
     @Test
     public void testTheResultOfMostPopularWordsIsTheSame() throws IOException {
         // arrange
-//        var poetryList = List.of("2pac", "gaga", "perry", "tool");
-        var poetryList = Files.list(Path.of(path))
+//        var poetList = List.of("2pac", "gaga", "perry", "tool");
+        var poetList = Files.list(Path.of(path))
             .map(d->d.getFileName().toString())
             .collect(Collectors.toList());
-        System.out.println(poetryList);
+        System.out.println(poetList);
 
-        for (var poetry: poetryList) {
-            System.out.println(poetry);
+        for (var poet: poetList) {
+            System.out.println(poet);
             // act
-            var expectedWords = analyzer.mostPopularWords(poetry, 5);
+            var expectedWords = analyzer.mostPopularWords(poet, 5);
             System.out.println(expectedWords);
-            var actualWords = analyzer.mostPopularWords(poetry, 5);
+            var actualWords = analyzer.mostPopularWords(poet, 5);
             // assert
             Assertions.assertEquals(expectedWords, actualWords);
         }
@@ -76,21 +77,31 @@ public class PoetryAnalyzerIT {
     @Test
     public void testTheUnexpectedDataDoesNotTotallyBreakTheService() {
         // arrange
-        var unexpectedPoetry = RandomStringUtils.randomAlphanumeric(10);
+        var unexpectedPoet = RandomStringUtils.randomAlphanumeric(10);
 
         // act
         try {
-            var expectedWords = analyzer.mostPopularWords(unexpectedPoetry, 5);
+            var expectedWords = analyzer.mostPopularWords(unexpectedPoet, 5);
         } catch (Exception ex) {
             System.out.println("The unexpected data cause Exception");
             ex.printStackTrace();
         }
 
         // assert
-        var poetry = "perry";
-        var expectedWords = analyzer.mostPopularWords(poetry, 5);
-        var actualWords = analyzer.mostPopularWords(poetry, 5);
+        var poet = "perry";
+        var expectedWords = analyzer.mostPopularWords(poet, 5);
+        var actualWords = analyzer.mostPopularWords(poet, 5);
         Assertions.assertEquals(expectedWords, actualWords);
         System.out.println("The service is still working");
+    }
+
+    @Test
+    public void testEncodingIncompatibilitiesCauseOutputResultIsNotCorrect(){
+        var poet = "perry";
+        byte[] bytes = poet.getBytes(StandardCharsets.UTF_8);
+        poet = new String(bytes, StandardCharsets.UTF_16);
+
+        String finalPoet = poet;
+        Assertions.assertThrows(Exception.class, () -> analyzer.mostPopularWords(finalPoet, 5));
     }
 }
