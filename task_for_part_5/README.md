@@ -1,32 +1,36 @@
 ## HDFS_task_manual
 
+download data from https://openflights.org/data.html  
+
 1.	Create HDFS directory /user/student and nested directories airports, airlines, routes, planes, countries
 
-hadoop fs –mkdir /user/student  
-hadoop fs –mkdir /user/student/airports  
-hadoop fs –mkdir /user/student/airlines  
-hadoop fs –mkdir /user/student/routes  
-hadoop fs –mkdir /user/student/planes  
-hadoop fs –mkdir /user/student/countries  
-
+```
+//hadoop fs –mkdir /user/student  
+hadoop fs –mkdir -p /user/student/airports  
+hadoop fs –mkdir -p /user/student/airlines  
+hadoop fs –mkdir -p /user/student/routes  
+hadoop fs –mkdir -p /user/student/planes  
+hadoop fs –mkdir -p /user/student/countries  
+```
 ![see screenshot-1.png](./screenshot-1.png)
 
 2.	Copy each file from the local file system's airlines dataset to the corresponding HDFS directory created in step #1 
 (i.e. routes.dat should be stored HDFS as /user/student/routes/routes.dat) 
 
-hadoop fs –put airports.dat /user/student/airports.dat  
-hadoop fs –put airlines.dat /user/student/airlines.dat  
-
-hadoop fs –put routes.dat /user/student/routes.dat  
-hadoop fs –put planes.dat /user/student/planes.dat  
-hadoop fs –put countries.dat /user/student/ountries.dat  
-
+```
+hadoop fs –put airports.dat /user/student/airports/airports.dat  
+hadoop fs –put airlines.dat /user/student/airlines/airlines.dat  
+hadoop fs –put routes.dat /user/student/routes/routes.dat  
+hadoop fs –put planes.dat /user/student/planes/planes.dat  
+hadoop fs –put countries.dat /user/student/countries/countries.dat  
+```
 ![see screenshot-2.png](./screenshot-2.png)
 
 3.	Print out to the console first 9 lines of /user/student/countries/countries.dat file
 
+```
 hadoop fs -cat /user/student/countries/countries.dat | head -9  
-
+```
 ![see screenshot-3.png](./screenshot-3.png)
 
 4.	Compare MD5 checksums between the local file airports.dat and HDFS file /user/student/airports/airports.dat. Is there any difference?
@@ -43,6 +47,22 @@ acfcde754e66b4f224562fa74b567b2b
 
 ![see screenshot-4.1.png](./screenshot-4.1.png)
 
+Here extra examples of command
+```
+[cloudera@quickstart Downloads]$ hadoop fs -checksum hdfs://quickstart.cloudera/user/student/airports/airports.dat
+hdfs://quickstart.cloudera/user/student/airports/airports.dat	MD5-of-0MD5-of-512CRC32C	000002000000000000000000a4129426226faee1719fb3c00d055f16
+
+[cloudera@quickstart Downloads]$ hadoop fs -checksum /user/student/airports/airports.dat
+/user/student/airports/airports.dat	MD5-of-0MD5-of-512CRC32C	000002000000000000000000a4129426226faee1719fb3c00d055f16
+
+[cloudera@quickstart Downloads]$ hadoop fs -checksum hdfs://0.0.0.0/user/student/airports/airports.dat
+hdfs://0.0.0.0/user/student/airports/airports.dat	MD5-of-0MD5-of-512CRC32C	000002000000000000000000a4129426226faee1719fb3c00d055f16
+```
+These examples do not work
+```
+hadoop fs -checksum file:///home/cloudera/Downloads/airports.dat
+hadoop fs -checksum file:///user/student/airports/airports.dat
+```
 
 5.	How much replicas does the /user/student/airports/airports.dat file have? Set number of replicas to 4 for the file
 
